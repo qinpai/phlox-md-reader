@@ -40,22 +40,30 @@
 
 需要 Python 3.9+（开发与验证环境：Windows 11 + Python 3.13.15）。
 
+**不用 git，一条命令下完整个仓库：**
+
+```bash
+curl -L -o phlox-md-reader.zip https://gitee.com/cric_qin/phlox-md-reader/repository/archive/master.zip
+```
+
+解压后进目录，装依赖、看样张：
+
+```bash
+unzip phlox-md-reader.zip && cd phlox-md-reader-master    # Windows：Expand-Archive phlox-md-reader.zip -DestinationPath .
+pip install -r requirements.txt                          # markdown + pillow
+python mdread.py demo                                    # 生成功能样张并自动打开
+```
+
+实测这条命令返回 `HTTP 200 · application/zip · 1.7 MB`，解开是 41 个文件。两个细节：`-L` 必须带（Gitee 会 302 到带签名的下载地址）；用 PowerShell 的 `Invoke-WebRequest` 抓同一个地址只会拿到登录页，所以这里写 `curl`。
+
+**装了 git 就用 clone**（能顺手 `git pull` 更新）：
+
 ```bash
 git clone --depth 1 https://gitee.com/cric_qin/phlox-md-reader.git
 cd phlox-md-reader
-pip install -r requirements.txt      # markdown + pillow
-python mdread.py demo                # 生成功能样张并打开，先看效果
+pip install -r requirements.txt
+python mdread.py demo
 ```
-
-只想要代码、不需要提交历史时加 `--depth 1`，整个仓库不到 4 MB。
-
-**没装 git 怎么拿？** 仓库页右上角「克隆/下载」→ 下载 ZIP 解压即可；也可以逐文件从 raw 地址取（公开仓库免登录）：
-
-```bash
-curl -L -O https://gitee.com/cric_qin/phlox-md-reader/raw/master/README.md
-```
-
-> Gitee 的 ZIP 直链要求浏览器登录态，用 `curl` 匿名请求拿到的是登录页而不是压缩包，所以这里不给 zip 的一行命令。
 
 用在自己的笔记目录上：
 
