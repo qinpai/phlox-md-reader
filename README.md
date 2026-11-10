@@ -84,16 +84,50 @@ python mdread.py serve "D:\notes\a.md" --port 7800
 
 上面这样直接跑就行。`serve` 边看边改，`build` 存成 html，`export` 打包成单文件。
 
-### 方式二：装成 AI agent 的 skill（两个包，按需选）
+### 方式二：一行装（Release 资产，最省事）
 
-如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你。
+两个包已经打好挂在 [v1.0.0 Release](https://github.com/qinpai/phlox-md-reader/releases/tag/v1.0.0) 上，不用下 1.7 MB 整库、也不用找安装器：下载 → 解压到技能目录 → 装依赖，三步完事。
 
-仓库里带了两个安装器，**只把 skill 真正需要的文件落盘**，截图和示例样张不装：
+```bash
+# 全量包（带离线公式）：31 文件 / 640 KB
+curl -L -o skill.zip https://github.com/qinpai/phlox-md-reader/releases/download/v1.0.0/phlox-md-reader-skill-v1.0.0.zip
+unzip -q skill.zip -d ~/.dsh/skills/
+
+# 轻量包（不带公式）：7 文件 / 89 KB
+curl -L -o skill.zip https://github.com/qinpai/phlox-md-reader/releases/download/v1.0.0/phlox-md-reader-skill-lite-v1.0.0.zip
+unzip -q skill.zip -d ~/.dsh/skills/
+```
+
+国内网络把 `https://github.com/qinpai/phlox-md-reader` 换成 `https://gitee.com/cric_qin/phlox-md-reader`，其余不动，两个地址的包逐字节相同：
+
+```bash
+curl -L -o skill.zip https://gitee.com/cric_qin/phlox-md-reader/releases/download/v1.0.0/phlox-md-reader-skill-v1.0.0.zip
+```
+
+Windows（PowerShell）：
+
+```powershell
+curl.exe -L -o skill.zip https://gitee.com/cric_qin/phlox-md-reader/releases/download/v1.0.0/phlox-md-reader-skill-v1.0.0.zip
+Expand-Archive skill.zip -DestinationPath "$env:USERPROFILE\.dsh\skills" -Force
+```
+
+zip 里顶层目录就是 `phlox-md-reader/`，所以解到 `skills/` 底下不用改名、不用挪位置。装完装依赖、自检：
+
+```bash
+pip install -r ~/.dsh/skills/phlox-md-reader/requirements.txt
+python ~/.dsh/skills/phlox-md-reader/mdread.py doctor
+```
+
+> 下载断了就重跑一次（`-C -` 可续传）。`v1.0.0` 里两个 zip 的 sha256 写在 Release 说明里，想核对就跑 `sha256sum skill.zip`。
+
+### 方式三：从仓库装（可改目标目录、走镜像、只装清单内文件）
+
+想装到别的目录、走 Gitee 镜像、或者不想让 1.7 MB 整库白白躺在硬盘上，就用仓库自带的安装器——它按清单只挑 skill 真正需要的文件落盘，截图和示例样张不装：
 
 | 包 | 落地 | 公式 | 适合 |
 |---|---|---|---|
 | **全量包** | 31 文件 · 640 KB | ✅ 离线 KaTeX，`$E=mc^2$` 正常排版 | 课程笔记、论文摘要、要写公式 |
-| **轻量包** | 7 文件 · 88 KB | ❌ 公式原样显示成 `$E=mc^2$` 源码 | 只读文字、想少装点东西 |
+| **轻量包** | 7 文件 · 89 KB | ❌ 公式原样显示成 `$E=mc^2$` 源码 | 只读文字、想少装点东西 |
 
 两个包都从整库 zip（1.7 MB）里挑文件，所以先下包再跑对应安装器（命令可照抄，跟仓库在同一层）：
 
