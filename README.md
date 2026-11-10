@@ -41,11 +41,21 @@
 需要 Python 3.9+（开发与验证环境：Windows 11 + Python 3.13.15）。
 
 ```bash
-git clone https://gitee.com/cric_qin/phlox-md-reader.git
+git clone --depth 1 https://gitee.com/cric_qin/phlox-md-reader.git
 cd phlox-md-reader
 pip install -r requirements.txt      # markdown + pillow
 python mdread.py demo                # 生成功能样张并打开，先看效果
 ```
+
+只想要代码、不需要提交历史时加 `--depth 1`，整个仓库不到 4 MB。
+
+**没装 git 怎么拿？** 仓库页右上角「克隆/下载」→ 下载 ZIP 解压即可；也可以逐文件从 raw 地址取（公开仓库免登录）：
+
+```bash
+curl -L -O https://gitee.com/cric_qin/phlox-md-reader/raw/master/README.md
+```
+
+> Gitee 的 ZIP 直链要求浏览器登录态，用 `curl` 匿名请求拿到的是登录页而不是压缩包，所以这里不给 zip 的一行命令。
 
 用在自己的笔记目录上：
 
