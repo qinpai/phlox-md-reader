@@ -116,7 +116,7 @@ python mdread.py export test.md           # 单文件应 ≈ 原 md 的 20–40 
 | 目录/刷新行为 | `build_toc_html()`、`/api/watch`、`JS` 里的轮询间隔 800ms | 轮询太快会占 CPU，800–1500ms 是甜点 |
 | 扫描哪些 md | `Docs._scan()`（默认只扫第一层） | 递归扫描会把 207 份草稿全塞进下拉列表 |
 
-改完的验证顺序：`python mdread.py build 测试.md` 看日志统计 → 浏览器看真页 → 手机宽度与横屏各看一次 → `export` 一份单文件确认没有外链。**本机没有 git**，动大改之前先复制一份 `mdread.py` 当备份。
+改完的验证顺序：`python mdread.py build 测试.md` 看日志统计 → 浏览器看真页 → 手机宽度与横屏各看一次 → `export` 一份单文件确认没有外链。动大改之前先 `git commit` 一次（仓库自带历史）；没有 git 的环境就复制一份 `mdread.py` 当备份。
 
 ## 九、文件布局
 
@@ -124,7 +124,10 @@ python mdread.py export test.md           # 单文件应 ≈ 原 md 的 20–40 
 phlox-md-reader/
 ├── SKILL.md               本文件
 ├── mdread.py              主程序（serve / build / export / doctor / demo）
+├── install_indigo.py      化学依赖的一键安装与自检（--check 验证渲染）
 ├── assets/katex/          KaTeX 0.16.11 离线包（js + css + 20 个 woff2 字体，MIT）
+├── examples/              可运行样张（01-reading-guide.md、02-chemistry.md + figs/）
+├── docs/                  README 截图
 ├── vendor/                epam.indigo（化学渲染，可选；缺了只跳过化学块）
 └── references/style.md    设计令牌：配色、字号、断点、间距
 ```

@@ -2,15 +2,9 @@
 
 **把 Markdown 渲染成"能长时间读下去"的中文阅读页** —— 一个单文件 Python 工具 + 一个 AI agent skill：左侧目录、自动编号插图、离线公式、SMILES 出化学结构式、深色与四套配色、手机自适应；本地起端口边改边看，也能导出单文件 HTML 发给别人。
 
-[English README](README_EN.md) · [操作说明（给 AI agent）](SKILL.md) · 仓库地址 <https://gitee.com/cric_qin/phlox-md-reader.git>
+[操作说明（给 AI agent）](SKILL.md) · 仓库地址 <https://gitee.com/cric_qin/phlox-md-reader.git>
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg) ![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-
-![桌面端：左上角文件夹下拉切换文档](docs/shot-menu.png)
-
-| 手机端（390px） | 四套配色 × 明暗 |
-|---|---|
-| ![手机端](docs/shot-phone.png) | ![配色](docs/shot-themes.png) |
 
 ---
 
@@ -24,16 +18,23 @@
 
 > 目标只有一个：让一份 Markdown 在电脑和手机上，都像一份排版好的 PDF 那样好读——但仍然是活的。
 
-## 效果对照
+## 效果预览
 
-| 常见做法 | 这里的做法 |
+**桌面端。** 左上角是文档切换（`📁 当前文档名 ▾`），左边常驻目录并随滚动高亮；正文每行 52–54 个汉字，工具栏右侧实时显示「每行约 N 字 · 正文宽 X px · 字号 Y px」。
+
+![桌面端：左上角文件夹下拉切换文档，左侧常驻目录](docs/shot-menu.png)
+
+**手机端（390px）。** 工具栏折成两行、按钮文字不省略；目录变 ☰ 抽屉，点开后铺满左侧、点遮罩收起；表格与长公式横向滑动。
+
+| 手机端（390 × 844） | 四套配色 × 明暗 |
 |---|---|
-| 一屏 120 字的长行，读三分钟就累 | 版心 `min(54em, 92vw)`，每行 52–54 个汉字，字号 `clamp()` 随窗口流体变化 |
-| 长文档找不到位置 | h2/h3 自动加锚点，宽屏固定左栏目录、窄屏 ☰ 抽屉，滚动高亮当前节 |
-| 插图没有编号，长截图撑爆一页 | 自动编号 + 题注；高 > 2× 宽的长图进限高 76vh 的滚动框 |
-| 化学结构式只能贴 ChemDraw 截图 | ` ```smiles ` 直接出结构式，题注自动补分子式与分子量 |
-| 改一个字就要手动刷新 | 800ms 轮询，保存即刷新，且**保留滚动位置** |
-| 想发给同学，对方不一定有环境 | `export` 出一份单文件 HTML，图片/公式/字体/样式全内嵌 |
+| ![手机端](docs/shot-phone.png) | ![配色](docs/shot-themes.png) |
+
+**化学结构式与反应式。** ` ```smiles ` 直接出结构图，题注自动补分子式与分子量（`C9 H8 O4 · MW 180.16`）；` ```rxn ` 出带箭头的反应式，箭头下的条件写在 `!` 开头的行里。
+
+![化学结构与反应式](docs/shot-chem.png)
+
+想自己看一圈，装好依赖后跑 `python mdread.py demo`——它会生成上面这些内容并直接打开。
 
 ## 快速开始
 
@@ -43,7 +44,7 @@
 git clone https://gitee.com/cric_qin/phlox-md-reader.git
 cd phlox-md-reader
 pip install -r requirements.txt      # markdown + pillow
-python mdread.py demo                # 先看效果：生成功能样张并打开
+python mdread.py demo                # 生成功能样张并打开，先看效果
 ```
 
 用在自己的笔记目录上：
@@ -61,13 +62,13 @@ python mdread.py serve "D:\notes\a.md" --port 7800
 
 ### 方式二：装成 AI agent 的 skill
 
-如果你在用 DeepSeek Harness 这类带 skill 机制的 agent，把整个目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你：
+如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把整个目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你：
 
 ```bash
 cp -r phlox-md-reader ~/.dsh/skills/
 ```
 
-`SKILL.md` 是写给 agent 看的操作说明（什么时候起服务、什么时候导出单文件、端口被占怎么办、图不显示怎么查），不需要你记命令。
+`SKILL.md` 是写给 agent 看的操作说明（何时起服务、何时导出单文件、端口被占怎么办、图不显示怎么查），连"写作时的排版约定"也写在那里，不用你记命令。
 
 ## 五个命令
 
@@ -105,31 +106,12 @@ Windows 首次使用若手机连不上，通常是防火墙：需要给 python �
 - **表格**：宽表格横向滑动，不撑破版心。
 - **打印**：`⎙` 隐藏工具栏与目录，Ctrl+P 直接存 PDF。
 
-![化学结构与反应式](docs/shot-chem.png)
-
 化学能力是**可选**的（另需约 22 MB，Apache-2.0，不随仓库分发）：
 
 ```bash
 pip install --target vendor epam.indigo
 python mdread.py doctor            # 确认 Indigo 可用
 ```
-
-## 写 md 的三条规矩
-
-1. **反应箭头上的条件只能写英文或符号。** Indigo 内置字库没有 CJK，`! 吡啶, 0 °C` 会渲染成 `□□, 0 °C`：
-
-   ````
-   ```rxn
-   ! pyridine, 0 °C
-   CC(=O)Cl.O=C([O-])c1ccccc1[O-].[Na+].[Na+]>>CC(=O)Oc1ccccc1C(=O)O
-   ```
-   ````
-
-   中文条件写进正文或题注。多步反应（`A>>B>>C`）也不支持，逐步写多个块。
-
-2. **图片放 `figs/`，用相对路径引用。** 题注就是 alt 文本，写清楚"这是什么"而不是"图片1"；缺图会在日志里以 `[缺图]` 报出。
-
-3. **标题编号自己写**（`## 1 背景`、`### 1.1 现状`）。渲染器会把编号抽成小号强调色，目录也按编号排。
 
 ## 适用场景
 
@@ -165,9 +147,9 @@ python mdread.py doctor            # 确认 Indigo 可用
 ```
 phlox-md-reader/
 ├── mdread.py              主程序（serve / build / export / doctor / demo）
-├── SKILL.md               面向 AI agent 的操作说明
+├── SKILL.md               面向 AI agent 的操作说明（含排版与写作约定）
 ├── install_indigo.py      可选化学依赖的一键安装与自检
-├─ assets/katex/          离线 KaTeX 0.16.11
+├── assets/katex/          离线 KaTeX 0.16.11
 ├── examples/              可运行样张（就是上面截图里的内容）
 ├── docs/                  README 截图
 ├── references/style.md    设计令牌：配色、字号、断点、间距
