@@ -1,0 +1,7 @@
+SKILL.md
+mdread.py
+README.md
+LICENSE
+requirements.txt
+install_indigo.py
+references/style.md

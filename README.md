@@ -84,26 +84,60 @@ python mdread.py serve "D:\notes\a.md" --port 7800
 
 上面这样直接跑就行。`serve` 边看边改，`build` 存成 html，`export` 打包成单文件。
 
-### 方式二：装成 AI agent 的 skill
+### 方式二：装成 AI agent 的 skill（两个包，按需选）
 
-如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你：
+如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你。
+
+仓库里带了两个安装器，**只把 skill 真正需要的文件落盘**，截图和示例样张不装：
+
+| 包 | 落地 | 公式 | 适合 |
+|---|---|---|---|
+| **全量包** | 31 文件 · 640 KB | ✅ 离线 KaTeX，`$E=mc^2$` 正常排版 | 课程笔记、论文摘要、要写公式 |
+| **轻量包** | 7 文件 · 88 KB | ❌ 公式原样显示成 `$E=mc^2$` 源码 | 只读文字、想少装点东西 |
+
+两个包都从整库 zip（1.7 MB）里挑文件，所以先下包再跑对应安装器（命令可照抄，跟仓库在同一层）：
 
 ```bash
-cp -r phlox-md-reader ~/.dsh/skills/
+# 1) 下包 + 解压
+curl -L -o phlox.zip https://codeload.github.com/qinpai/phlox-md-reader/zip/refs/heads/master
+unzip -q phlox.zip && cd phlox-md-reader-master
 ```
+
+**A. 装全量包（带公式）**
+
+```bash
+bash install-skill.sh              # 默认装到 ~/.dsh/skills/phlox-md-reader
+```
+
+**B. 装轻量包（不带公式）**
+
+```bash
+bash install-skill.sh -l
+```
+
+Windows（PowerShell，同一份仓库）：
+
+```powershell
+# 全量
+powershell -ExecutionPolicy Bypass -File install-skill.ps1
+# 轻量
+powershell -ExecutionPolicy Bypass -File install-skill.ps1 -Lite
+```
+
+常用选项：`-t <目录>` / `-Target <dir>` 换安装位置，`-f` / `-Force` 覆盖已存在的目录，`-m gitee` 走镜像下载，`-n` / `-FromNetwork` 让安装器自己去下 zip（不用先解压）。
+
+装完两包都要跑一次依赖和自检：
+
+```bash
+pip install -r requirements.txt
+python mdread.py doctor          # 全量包会显示「KaTeX 组件 ✓ 25 个文件」
+```
+
+**轻量包少了什么、还能不能补**：只少了 `assets/katex/`（离线公式引擎与字体）。目录、插图编号、化学结构式、深色配色、局域网预览全都在；`$...$` 不再排版，而是原样显示 TeX 源码。以后想补，把仓库里的 `assets/katex/` 整个复制进去，`doctor` 立刻变成 ✓，不用重装。
+
+> 为什么不下整库：整库 1.7 MB 里有 1.3 MB 是 `docs/` 的四张 README 截图、153 KB 是 `examples/` 演示样张，这两块只在网页上看 README 时有用，skill 加载时根本不会读。
 
 `SKILL.md` 是写给 agent 看的操作说明（何时起服务、何时导出单文件、端口被占怎么办、图不显示怎么查），连"写作时的排版约定"也写在那里，不用你记命令。
-
-**只想拿 skill 本体（约 380 KB，不要 README 用的截图）**，用稀疏检出，只拉这几项：
-
-```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/qinpai/phlox-md-reader.git
-cd phlox-md-reader
-git sparse-checkout set --no-cone SKILL.md mdread.py README.md LICENSE requirements.txt install_indigo.py references assets
-cp -r . ~/.dsh/skills/phlox-md-reader
-```
-
-> 全库 zip 是 1.7 MB，其中 1.3 MB 是 `docs/` 里那四张 README 截图，`examples/` 是 153 KB 的演示样张；这两块不参与 skill 加载，删掉不影响运行。真正需要的是 `SKILL.md`、`mdread.py`、`references/`、`assets/katex/`（离线公式）四项，合计 30 个文件。
 
 ## 五个命令
 
