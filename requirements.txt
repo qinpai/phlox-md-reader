@@ -1,0 +1,8 @@
+# 必需
+markdown>=3.5
+pillow>=10.0
+
+# 可选：化学结构式 / 反应式（体积约 22 MB；装不上时页面会跳过化学块）
+# 推荐用 --target vendor 安装，便于随时删除：
+#   pip install --target vendor epam.indigo
+# epam.indigo>=1.46.0

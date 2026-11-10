@@ -1,0 +1,24 @@
+# 可选依赖：化学结构式/反应式渲染（约 22 MB）
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+
+# 运行产物
+.mdread/
+*_单文件.html
+mdread-demo/
+demo.md
+watchsite.log
+
+# 编辑器/系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
