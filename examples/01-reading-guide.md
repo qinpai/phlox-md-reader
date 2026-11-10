@@ -54,4 +54,4 @@ $$
 
 ## 1.7 长图
 
-![图 2　从写 md 到导出的六步流程](figs/fig-flow-tall.png)
+![图 2　写 md → 起服务 → 浏览器阅读 → 保存即刷新](figs/fig-flow-tall.png)
