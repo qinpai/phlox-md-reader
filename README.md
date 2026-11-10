@@ -49,7 +49,7 @@ curl -L -o phlox-md-reader.zip https://codeload.github.com/qinpai/phlox-md-reade
 国内访问 GitHub 慢就走 Gitee 镜像（同一个仓库，`master` 分支同步）：
 
 ```bash
-curl -L -o phlox-md-reader.zip https://gitee.com/cric_qin/phlox-md-reader/repository/archive/master.zip
+curl -L --retry 5 --retry-all-errors -o phlox-md-reader.zip https://gitee.com/cric_qin/phlox-md-reader/repository/archive/master.zip
 ```
 
 解压后进目录，装依赖、看样张：
@@ -98,10 +98,13 @@ python mdread.py serve "D:\notes\a.md" --port 7800
 两个包都从整库 zip（1.7 MB）里挑文件，所以先下包再跑对应安装器（命令可照抄，跟仓库在同一层）：
 
 ```bash
-# 1) 下包 + 解压
-curl -L -o phlox.zip https://codeload.github.com/qinpai/phlox-md-reader/zip/refs/heads/master
+# 1) 下包 + 解压（zip 约 1.7 MB；加 --retry 是因为国内网络常在传到一半时被掐断）
+curl -L --retry 5 --retry-all-errors -o phlox.zip \
+  https://codeload.github.com/qinpai/phlox-md-reader/zip/refs/heads/master
 unzip -q phlox.zip && cd phlox-md-reader-master
 ```
+
+下完先瞄一眼大小：**1.6–1.8 MB 才算完整**，只有两三百 KB 就是断了，重跑一次即可（或加 `-C -` 续传）。
 
 **A. 装全量包（带公式）**
 

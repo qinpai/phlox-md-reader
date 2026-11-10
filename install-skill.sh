@@ -76,7 +76,8 @@ if [ -d "$TARGET" ] && [ -n "$(ls -A "$TARGET" 2>/dev/null)" ] && [ "$FORCE" -eq
 fi
 
 total=0; copied=0; missing=""
-while IFS= read -r rel; do
+# note: `|| [ -n "$rel" ]` keeps the last manifest line when the file has no trailing newline
+while IFS= read -r rel || [ -n "$rel" ]; do
   [ -z "$rel" ] && continue
   total=$((total+1))
   if [ -f "$SRC/$rel" ]; then
