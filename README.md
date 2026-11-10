@@ -86,13 +86,24 @@ python mdread.py serve "D:\notes\a.md" --port 7800
 
 ### 方式二：装成 AI agent 的 skill
 
-如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把整个目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你：
+如果你在用带 skill 机制的 agent（DeepSeek Harness 等），把目录放进技能目录，之后只要说一句"把这份 md 渲染成网页"，agent 自己会起服务、挑端口、把地址给你：
 
 ```bash
 cp -r phlox-md-reader ~/.dsh/skills/
 ```
 
 `SKILL.md` 是写给 agent 看的操作说明（何时起服务、何时导出单文件、端口被占怎么办、图不显示怎么查），连"写作时的排版约定"也写在那里，不用你记命令。
+
+**只想拿 skill 本体（约 380 KB，不要 README 用的截图）**，用稀疏检出，只拉这几项：
+
+```bash
+git clone --depth 1 --filter=blob:none --sparse https://github.com/qinpai/phlox-md-reader.git
+cd phlox-md-reader
+git sparse-checkout set --no-cone SKILL.md mdread.py README.md LICENSE requirements.txt install_indigo.py references assets
+cp -r . ~/.dsh/skills/phlox-md-reader
+```
+
+> 全库 zip 是 1.7 MB，其中 1.3 MB 是 `docs/` 里那四张 README 截图，`examples/` 是 153 KB 的演示样张；这两块不参与 skill 加载，删掉不影响运行。真正需要的是 `SKILL.md`、`mdread.py`、`references/`、`assets/katex/`（离线公式）四项，合计 30 个文件。
 
 ## 五个命令
 
