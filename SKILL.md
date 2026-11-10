@@ -15,7 +15,7 @@ description: Phlox-md-reader — 把 Markdown 渲染成"能长时间读下去"�
 - 化学式不能只贴 PNG → 让 SMILES 直接出结构式，题注自动补分子式与分子量。
 - 改一个字就要刷新 → **保存即刷新**，而且**保留滚动位置**。
 
-这个 skill 就是这一套，已经在真实文档上跑通过。
+这个 skill 只做这一件事：给一个 md 路径，把它变成可读、可定位、可分享的页面。除 Python 与 `requirements.txt` 里的两个库外不需要额外配置。
 
 ## 二、什么时候用哪个命令
 
@@ -29,8 +29,8 @@ description: Phlox-md-reader — 把 Markdown 渲染成"能长时间读下去"�
 命令都以 skill 目录为当前目录执行（`python mdread.py …`），脚本自带 UTF-8 输出重配，中文路径不会乱码。
 
 ```bash
-python mdread.py serve  "D:\path\to\note.md"            # 单份文档
-python mdread.py serve  "D:\path\to\folder"             # 整个目录，左上角 📁 文件夹下拉切换文档
+python mdread.py serve  "<md 路径>"                      # 单份文档
+python mdread.py serve  "<目录路径>"                     # 整个目录，左上角 📁 文件夹下拉切换文档
 python mdread.py serve  note.md --port 7800 --lan on     # 指定端口；--lan on 才预开放局域网（默认只本机）
 python mdread.py build  note.md --out out.html
 python mdread.py export note.md
@@ -86,7 +86,7 @@ python mdread.py doctor
 
 | 现象 | 查什么 |
 |---|---|
-| 手机打不开 | 先看电脑上端口是否 `0.0.0.0`（工具栏开了局域网？）；再看 Windows 防火墙是否为 python 放了入站规则（本机这条叫 `mdread-preview`，换台机器名字随意，端口段 7788–7807）；再确认手机与电脑在同一网段（校园网常做接入层隔离，换热点最稳） |
+| 手机打不开 | 先看电脑上端口是否 `0.0.0.0`（工具栏开了局域网？）；再看 Windows 防火墙是否为 python 放了入站规则（端口段 7788–7807）；再确认手机与电脑在同一网段（校园网常做接入层隔离，换热点最稳） |
 | 公式显示成 `$…$` 原文 | `doctor` 看 KaTeX 组件是否为 24 个文件；确认 md 里 `$` 前后没有多余空格 |
 | 化学块显示"化学渲染未启用" | `doctor` 看 Indigo 是否可用；`vendor/` 丢了就重装 `pip install --target vendor epam.indigo` |
 | 化学块显示 SMILES 解析失败 | 首行 `!` 条件是否写了中文；多步反应是否写了两个 `>` |
@@ -101,7 +101,7 @@ python mdread.py build test.md            # 看日志里 图/目视比对/缺图
 python mdread.py export test.md           # 单文件应 ≈ 原 md 的 20–40 倍（含字体）
 ```
 
-页面级验证用 CDP 量，不靠肉眼：工具栏高度、按钮是否被裁（`scrollWidth > clientWidth`）、标题有没有被工具栏压住、长图框的 `clientHeight / scrollHeight`、KaTeX 是否有 `.katex-error`。开发期本机有一组探测脚本（`uicheck.py` / `overlaycheck.py` / `tallcheck.py` / `docmenu.py`），不随仓库发布。
+页面级验收不看"应该没问题"，逐项确认：工具栏高度、按钮文字是否被裁（`scrollWidth > clientWidth`）、标题有没有被工具栏压住、长图框的 `clientHeight / scrollHeight`、公式是否渲染成 `.katex`（而不是留在原样的 `$…$`）、化学块是否出图而不是错误提示。三档宽度各看一次：1440、844（横屏）、390（竖屏）。
 
 ## 八、以后要改它，改这几处就够
 
@@ -114,9 +114,9 @@ python mdread.py export test.md           # 单文件应 ≈ 原 md 的 20–40 
 | 化学出图尺寸/配色 | `render_chem()` 里的 `base_w/base_h`、`render-background-color` | 尺寸是 2 倍渲染再裁白边，别直接改小，会糊 |
 | 页面骨架（工具栏按钮、页脚） | `PAGE` 模板字符串 | 占位符 `__TOC__`/`__BODY__`/`__DOCS__` 等不能删 |
 | 目录/刷新行为 | `build_toc_html()`、`/api/watch`、`JS` 里的轮询间隔 800ms | 轮询太快会占 CPU，800–1500ms 是甜点 |
-| 扫描哪些 md | `Docs._scan()`（默认只扫第一层） | 递归扫描会把 207 份草稿全塞进下拉列表 |
+| 扫描哪些 md | `Docs._scan()`（默认只扫第一层） | 递归扫描会把草稿目录里的每一份 md 都塞进下拉列表 |
 
-改完的验证顺序：`python mdread.py build 测试.md` 看日志统计 → 浏览器看真页 → 手机宽度与横屏各看一次 → `export` 一份单文件确认没有外链。动大改之前先 `git commit` 一次（仓库自带历史）；没有 git 的环境就复制一份 `mdread.py` 当备份。
+改完的验证顺序：`python mdread.py build 测试.md` 看日志统计 → 浏览器看真页 → 手机宽度与横屏各看一次 → `export` 一份单文件确认没有外链。动大改之前先复制一份 `mdread.py` 当备份。
 
 ## 九、文件布局
 
