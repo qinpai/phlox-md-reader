@@ -2,7 +2,7 @@
 
 **把 Markdown 渲染成"能长时间读下去"的中文阅读页** —— 一个单文件 Python 工具 + 一个 AI agent skill：左侧目录、自动编号插图、离线公式、SMILES 出化学结构式、深色与四套配色、手机自适应；本地起端口边改边看，也能导出单文件 HTML 发给别人。
 
-[操作说明（给 AI agent）](SKILL.md) · 仓库地址 <https://gitee.com/cric_qin/phlox-md-reader.git>
+[操作说明（给 AI agent）](SKILL.md) · GitHub <https://github.com/qinpai/phlox-md-reader> · Gitee 镜像 <https://gitee.com/cric_qin/phlox-md-reader>
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg) ![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
@@ -43,6 +43,12 @@
 **不用 git，一条命令下完整个仓库：**
 
 ```bash
+curl -L -o phlox-md-reader.zip https://codeload.github.com/qinpai/phlox-md-reader/zip/refs/heads/master
+```
+
+国内访问 GitHub 慢就走 Gitee 镜像（同一个仓库，`master` 分支同步）：
+
+```bash
 curl -L -o phlox-md-reader.zip https://gitee.com/cric_qin/phlox-md-reader/repository/archive/master.zip
 ```
 
@@ -54,12 +60,12 @@ pip install -r requirements.txt                          # markdown + pillow
 python mdread.py demo                                    # 生成功能样张并自动打开
 ```
 
-实测这条命令返回 `HTTP 200 · application/zip · 1.7 MB`，解开是 41 个文件。两个细节：`-L` 必须带（Gitee 会 302 到带签名的下载地址）；用 PowerShell 的 `Invoke-WebRequest` 抓同一个地址只会拿到登录页，所以这里写 `curl`。
+实证：GitHub 的 codeload 返回 `200 · application/zip · 1.7 MB`，Gitee 那条返回同样大小的包，解开都是 41 个文件。细节：Gitee 必须带 `-L`（会 302 到带签名的地址），且别用 PowerShell 的 `Invoke-WebRequest` 抓它——那会拿到登录页。
 
 **装了 git 就用 clone**（能顺手 `git pull` 更新）：
 
 ```bash
-git clone --depth 1 https://gitee.com/cric_qin/phlox-md-reader.git
+git clone --depth 1 https://github.com/qinpai/phlox-md-reader.git
 cd phlox-md-reader
 pip install -r requirements.txt
 python mdread.py demo
